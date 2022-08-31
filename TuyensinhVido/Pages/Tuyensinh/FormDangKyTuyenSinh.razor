@@ -1,0 +1,50 @@
+﻿@page "/dangky"
+@using TuyensinhVido.Models
+@inject ITuyenhsinhService tuyensinhService
+@inject NavigationManager NavigationManager
+<h3>FormDangKyTuyenSinh</h3>
+<EditForm Model="tuyensinh" OnSubmit="HandleSubmit">
+    <div>
+        <label for="hoten">Ho ten</label>
+        <InputText id="hoten" @bind-Value="tuyensinh.Hoten" class="form-control" />
+    </div>
+    <div>
+        <label for="cmnd">CMND</label>
+        <InputText id="cmnd" @bind-Value="tuyensinh.CMND" class="form-control" />
+    </div>
+    <div>
+        <label for="ngaysinh">Ngay sinh</label>
+        <InputDate id="ngaysinh" @bind-Value="tuyensinh.Ngaysinh" class="form-control" />
+    </div>
+    <div>
+        <label for="hocba">Hoc ba</label>
+        <InputFile id="hocba" @bind-Value="tuyensinh.Hocba" class="form-control" />
+    </div>
+    <div>
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="tuyensinh.Email" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancel">Cancel</button>
+</EditForm>
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    Tuyensinh tuyensinh = new Tuyensinh();
+    string btnText = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Save" : "Update";
+    }
+    async Task HandleSubmit()
+    {
+        if (Id == null)
+        {
+            await tuyensinhService.CreateTuyensinh(tuyensinh);
+        }
+    }
+    async Task Cancel()
+    {
+        NavigationManager.NavigateTo("/carmanage");
+    }
+}
