@@ -8,6 +8,7 @@ using TuyensinhVido.Areas.Identity;
 using TuyensinhVido.Services;
 using TuyensinhVido.Data;
 using TuyensinhVido.Services.TuyensinhServices;
+using Tewr.Blazor.FileReader;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<TuyensinhDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddFileReaderService(o => o.UseWasmSharedBuffer = true);
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<ITuyenhsinhService, TuyensinhService>();

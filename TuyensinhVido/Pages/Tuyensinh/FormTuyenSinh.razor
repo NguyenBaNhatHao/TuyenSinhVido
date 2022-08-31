@@ -1,0 +1,53 @@
+﻿@page "/tuyensinh"
+@using TuyensinhVido.Models
+@using Newtonsoft.Json
+@inject ITuyenhsinhService tuyensinhService
+@inject NavigationManager NavigationManager
+<h3>FormTuyenSinh</h3>
+
+<button class="btn btn-primary" @onclick="CreateAndEditSinhvien">Add sinh vien</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Họ tên</th>
+            <th>CMND</th>
+            <th>Ngày sinh</th>
+            <th>Học bạ</th>
+            <th>Email</th>
+            <th>Ngành đăng kí</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var benhvien in tuyensinhService.TuyensinhServices)
+        {
+            <tr>
+                <td>@benhvien.Hoten</td>
+                <td>@benhvien.CMND</td>
+                <td>@benhvien.Ngaysinh</td>
+                <td>@benhvien.Hocba</td>
+                <td>@benhvien.Email</td>
+                <td>@benhvien.Nganh.ten</td>
+            </tr>
+        }
+        @*@foreach(DataRow row in dataTable.Rows)
+        {
+        <tr>
+        @foreach(DataColumn col in dataTable.Columns)
+        {
+        <td>@row[col.ColumnName].ToString()</td>
+        }
+        </tr>
+        }*@
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await tuyensinhService.GetTuyensinhDetail();
+    }
+    void CreateAndEditSinhvien()
+    {
+        NavigationManager.NavigateTo("/dangky");
+    }
+}

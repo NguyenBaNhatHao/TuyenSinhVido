@@ -6,7 +6,7 @@ namespace TuyensinhVido.Models
     {
         [Key]
         [Required]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string? Hoten { get; set; }
         public string? CMND { get; set; }
         public DateTime Ngaysinh { get; set; }

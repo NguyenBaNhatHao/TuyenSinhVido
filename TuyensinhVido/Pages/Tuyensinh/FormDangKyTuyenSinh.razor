@@ -1,7 +1,13 @@
 ﻿@page "/dangky"
+@using Tewr.Blazor.FileReader
 @using TuyensinhVido.Models
+@using System.IO
+@inject ILogger<Tuyensinh> Logger
+@inject IWebHostEnvironment Environment
+@inject IFileReaderService fileReader
 @inject ITuyenhsinhService tuyensinhService
 @inject NavigationManager NavigationManager
+@inject HttpClient client
 <h3>FormDangKyTuyenSinh</h3>
 <EditForm Model="tuyensinh" OnSubmit="HandleSubmit">
     <div>
@@ -13,25 +19,49 @@
         <InputText id="cmnd" @bind-Value="tuyensinh.CMND" class="form-control" />
     </div>
     <div>
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="tuyensinh.Email" class="form-control" />
+    </div>
+    <div>
         <label for="ngaysinh">Ngay sinh</label>
         <InputDate id="ngaysinh" @bind-Value="tuyensinh.Ngaysinh" class="form-control" />
     </div>
     <div>
         <label for="hocba">Hoc ba</label>
-        <InputFile id="hocba" @bind-Value="tuyensinh.Hocba" class="form-control" />
+        <input type="file" id="hocba" @ref="elementReference" @onchange="OpenFileAsync" multiple class="form-control" />
     </div>
+    <button type="button" class="btn btn-danger" @onclick="UploadFileAsync">add image</button>
     <div>
-        <label for="email">Email</label>
-        <InputText id="email" @bind-Value="tuyensinh.Email" class="form-control" />
+        <label for="nganh">Nganh</label>
+        <InputSelect id="nganh" @bind-Value="tuyensinh.NganhId" @onclick="SelectValues" class="form-control">
+            @foreach (var dept in tuyensinhService.NganhServices)
+            {
+                <option value="@dept.id">@dept.ten</option>
+            }
+        </InputSelect>
     </div>
     <button type="submit" class="btn btn-primary">@btnText</button>
     <button type="button" class="btn btn-danger" @onclick="Cancel">Cancel</button>
+    <br />
+    <img src="@imgURL"/>
 </EditForm>
 @code {
     [Parameter]
     public int? Id { get; set; }
     Tuyensinh tuyensinh = new Tuyensinh();
     string btnText = string.Empty;
+    private long maxFileSize = 1920 * 1080;
+    string imgURL;
+
+    ElementReference elementReference;
+    string message = String.Empty;
+    string imagePath = String.Empty;
+    string fileName = String.Empty;
+    string type = String.Empty;
+    string size = String.Empty;
+
+    Stream fileStream;
+
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Save" : "Update";
@@ -43,8 +73,41 @@
             await tuyensinhService.CreateTuyensinh(tuyensinh);
         }
     }
+    async void LoadFiles(InputFileChangeEventArgs e)
+    {
+        var imagefile = await e.File.RequestImageFileAsync("image/jpeg", maxWidth:640, maxHeight:480);
+        using Stream stream = imagefile.OpenReadStream(maxFileSize);
+        using MemoryStream ms = new();
+
+        await stream.CopyToAsync(ms);
+        imgURL = $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+        tuyensinh.Hocba = imagefile.Name;
+    }
     async Task Cancel()
     {
-        NavigationManager.NavigateTo("/carmanage");
+        NavigationManager.NavigateTo("");
+    }
+    async Task SelectValues(){
+        await tuyensinhService.GetNganhDetail();
+    }
+    async Task OpenFileAsync(){
+        var file = (await fileReader.CreateReference(elementReference).EnumerateFilesAsync()).FirstOrDefault();
+        if(file == null){
+            return;
+        }
+        var fileInfo = await file.ReadFileInfoAsync();
+        fileName = fileInfo.Name;
+        size = $"{fileInfo.Size}b";
+        type = fileInfo.Type;
+        using(var memoryStream = await file.CreateMemoryStreamAsync((int)fileInfo.Size)){
+            fileStream = new MemoryStream(memoryStream.ToArray());
+        }
+    }
+    async Task UploadFileAsync(){
+        string url = "https://localhost:7058";
+        var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(fileStream, (int)fileStream.Length), "uploads", fileName);
+        var response = client.PostAsync($"{url}/api/tuyensinh/upload", content);
+        message = "Upload success";
     }
 }
