@@ -45,11 +45,9 @@ namespace TuyensinhVido.Services.TuyensinhServices
             }
         }
 
-        
-
         public async Task<string> UploadProductImage(MultipartFormDataContent content)
         {
-            var postResult = await _http.PostAsync("https://localhost:7058/api/upload", content);
+            var postResult = await _http.PostAsync("https://localhost:7058/api/tuyensinh/upload", content);
             var postContent = await postResult.Content.ReadAsStringAsync();
             if (!postResult.IsSuccessStatusCode)
             {
@@ -58,7 +56,7 @@ namespace TuyensinhVido.Services.TuyensinhServices
             else
             {
                 var imgUrl = Path.Combine("https://localhost:7058/", postContent);
-                return imgUrl;
+                return postContent;
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿@page "/dangky"
+@using System.Net.Http.Headers
 @using Tewr.Blazor.FileReader
 @using TuyensinhVido.Models
 @using System.IO
@@ -6,8 +7,8 @@
 @inject IWebHostEnvironment Environment
 @inject IFileReaderService fileReader
 @inject ITuyenhsinhService tuyensinhService
-@inject NavigationManager NavigationManager
 @inject HttpClient client
+@inject NavigationManager NavigationManager
 <h3>FormDangKyTuyenSinh</h3>
 <EditForm Model="tuyensinh" OnSubmit="HandleSubmit">
     <div>
@@ -26,11 +27,7 @@
         <label for="ngaysinh">Ngay sinh</label>
         <InputDate id="ngaysinh" @bind-Value="tuyensinh.Ngaysinh" class="form-control" />
     </div>
-    <div>
-        <label for="hocba">Hoc ba</label>
-        <input type="file" id="hocba" @ref="elementReference" @onchange="OpenFileAsync" multiple class="form-control" />
-    </div>
-    <button type="button" class="btn btn-danger" @onclick="UploadFileAsync">add image</button>
+        
     <div>
         <label for="nganh">Nganh</label>
         <InputSelect id="nganh" @bind-Value="tuyensinh.NganhId" @onclick="SelectValues" class="form-control">
@@ -40,28 +37,24 @@
             }
         </InputSelect>
     </div>
+    <div>
+        <img src="@ImgUrl" style="width: 250px; height: 250px;" /><br /><br />
+        <InputFile id="hocba" OnChange="@OnInputFileChanged" class="form-control" />
+    </div>
     <button type="submit" class="btn btn-primary">@btnText</button>
     <button type="button" class="btn btn-danger" @onclick="Cancel">Cancel</button>
     <br />
-    <img src="@imgURL"/>
+    
 </EditForm>
 @code {
     [Parameter]
     public int? Id { get; set; }
     Tuyensinh tuyensinh = new Tuyensinh();
     string btnText = string.Empty;
-    private long maxFileSize = 1920 * 1080;
-    string imgURL;
-
-    ElementReference elementReference;
-    string message = String.Empty;
-    string imagePath = String.Empty;
-    string fileName = String.Empty;
-    string type = String.Empty;
-    string size = String.Empty;
-
-    Stream fileStream;
-
+    [Parameter]
+    public string ImgUrl { get; set; }
+    [Parameter]
+    public EventCallback<string> OnChange { get; set; }
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Save" : "Update";
@@ -73,16 +66,6 @@
             await tuyensinhService.CreateTuyensinh(tuyensinh);
         }
     }
-    async void LoadFiles(InputFileChangeEventArgs e)
-    {
-        var imagefile = await e.File.RequestImageFileAsync("image/jpeg", maxWidth:640, maxHeight:480);
-        using Stream stream = imagefile.OpenReadStream(maxFileSize);
-        using MemoryStream ms = new();
-
-        await stream.CopyToAsync(ms);
-        imgURL = $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
-        tuyensinh.Hocba = imagefile.Name;
-    }
     async Task Cancel()
     {
         NavigationManager.NavigateTo("");
@@ -90,24 +73,25 @@
     async Task SelectValues(){
         await tuyensinhService.GetNganhDetail();
     }
-    async Task OpenFileAsync(){
-        var file = (await fileReader.CreateReference(elementReference).EnumerateFilesAsync()).FirstOrDefault();
-        if(file == null){
-            return;
+    async Task OnInputFileChanged (InputFileChangeEventArgs e){
+        var imageFiles = e.GetMultipleFiles();
+        foreach (var imageFile in imageFiles)
+        {
+            if (imageFile != null)
+            {
+                var resizedFile = await imageFile.RequestImageFileAsync("image/png", 300, 500);
+
+                using (var ms = resizedFile.OpenReadStream(resizedFile.Size))
+                {
+                    var content = new MultipartFormDataContent();
+                    content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                    content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "file", imageFile.Name);
+                    ImgUrl = await tuyensinhService.UploadProductImage(content);
+
+                    await OnChange.InvokeAsync(ImgUrl);
+                    tuyensinh.Hocba = ImgUrl;
+                }
+            }
         }
-        var fileInfo = await file.ReadFileInfoAsync();
-        fileName = fileInfo.Name;
-        size = $"{fileInfo.Size}b";
-        type = fileInfo.Type;
-        using(var memoryStream = await file.CreateMemoryStreamAsync((int)fileInfo.Size)){
-            fileStream = new MemoryStream(memoryStream.ToArray());
-        }
-    }
-    async Task UploadFileAsync(){
-        string url = "https://localhost:7058";
-        var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(fileStream, (int)fileStream.Length), "uploads", fileName);
-        var response = client.PostAsync($"{url}/api/tuyensinh/upload", content);
-        message = "Upload success";
     }
 }
