@@ -9,24 +9,7 @@ namespace TuyensinhVido.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "tbl_Nganh",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false),
-                    ma = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ten = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    KhoiThi = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    khoaId = table.Column<int>(type: "int", nullable: true),
-                    heDaoTaoId = table.Column<int>(type: "int", nullable: true),
-                    tenTA = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    KyHieu = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tbl_Nganh", x => x.id);
-                });
-
+            
             migrationBuilder.CreateTable(
                 name: "tbl_Tuyensinh",
                 columns: table => new
@@ -35,9 +18,11 @@ namespace TuyensinhVido.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Hoten = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CMND = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SDT = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Ngaysinh = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Hocba = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NganhId = table.Column<int>(type: "int", nullable: true)
+                    NganhId = table.Column<int>(type: "int", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,8 +45,6 @@ namespace TuyensinhVido.Migrations
             migrationBuilder.DropTable(
                 name: "tbl_Tuyensinh");
 
-            migrationBuilder.DropTable(
-                name: "tbl_Nganh");
         }
     }
 }

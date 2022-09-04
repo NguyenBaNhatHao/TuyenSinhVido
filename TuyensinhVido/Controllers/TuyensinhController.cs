@@ -30,6 +30,7 @@ namespace TuyensinhVido.Controllers
                                     Id = tuyensinh.Id,
                                     Hoten = tuyensinh.Hoten,
                                     CMND = tuyensinh.CMND,
+                                    SDT = tuyensinh.SDT,
                                     Ngaysinh = tuyensinh.Ngaysinh,
                                     Hocba = tuyensinh.Hocba,
                                     NganhId = tuyensinh.NganhId,
@@ -43,6 +44,7 @@ namespace TuyensinhVido.Controllers
                 bvdto.Id = item.Id;
                 bvdto.Hoten = item.Hoten;
                 bvdto.CMND = item.CMND;
+                bvdto.SDT = item.SDT;
                 bvdto.Ngaysinh = item.Ngaysinh;
                 bvdto.Hocba = item.Hocba;
                 bvdto.Email = item.Email;
@@ -109,5 +111,6 @@ namespace TuyensinhVido.Controllers
             }
             return Ok(filenamenew);
         }
+
     }
 }

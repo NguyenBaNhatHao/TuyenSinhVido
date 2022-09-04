@@ -22,46 +22,19 @@ namespace TuyensinhVido.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("TuyensinhVido.Models.Nganh", b =>
-                {
-                    b.Property<int?>("id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("KhoiThi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KyHieu")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("heDaoTaoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("khoaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ma")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ten")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("tenTA")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("tbl_Nganh");
-                });
-
+            
             modelBuilder.Entity("TuyensinhVido.Models.Tuyensinh", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("CMND")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Hocba")
@@ -75,6 +48,10 @@ namespace TuyensinhVido.Migrations
 
                     b.Property<DateTime>("Ngaysinh")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("SDT")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

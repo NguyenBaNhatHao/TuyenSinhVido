@@ -3,11 +3,13 @@
 @using Tewr.Blazor.FileReader
 @using TuyensinhVido.Models
 @using System.IO
+@using System.Drawing
 @inject ILogger<Tuyensinh> Logger
 @inject IWebHostEnvironment Environment
 @inject IFileReaderService fileReader
 @inject ITuyenhsinhService tuyensinhService
 @inject HttpClient client
+@inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
 <h3>FormDangKyTuyenSinh</h3>
 <EditForm Model="tuyensinh" OnSubmit="HandleSubmit">
@@ -18,6 +20,10 @@
     <div>
         <label for="cmnd">CMND</label>
         <InputText id="cmnd" @bind-Value="tuyensinh.CMND" class="form-control" />
+    </div>
+    <div>
+        <label for="sdt">SDT</label>
+        <InputText id="sdt" @bind-Value="tuyensinh.SDT" class="form-control" />
     </div>
     <div>
         <label for="email">Email</label>
@@ -38,7 +44,7 @@
         </InputSelect>
     </div>
     <div>
-        <img src="@ImgUrl" style="width: 250px; height: 250px;" /><br /><br />
+        <img src="@image" style="width: 250px; height: 250px;" /><br /><br />
         <InputFile id="hocba" OnChange="@OnInputFileChanged" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">@btnText</button>
@@ -55,14 +61,21 @@
     public string ImgUrl { get; set; }
     [Parameter]
     public EventCallback<string> OnChange { get; set; }
+    Image image { get; set; }
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Save" : "Update";
     }
     async Task HandleSubmit()
     {
-        if (Id == null)
+        if (tuyensinh.NganhId == null || tuyensinh.Hoten == null || tuyensinh.Email == null || tuyensinh.SDT == null || tuyensinh.Hocba == null)
         {
+            await JsRuntime.InvokeVoidAsync("alert", "Warning!");
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Xin hãy nhập đủ dữ liệu");
+        }
+        else if (Id == null && (tuyensinh.NganhId != null || tuyensinh.Hoten != null || tuyensinh.Email != null || tuyensinh.SDT != null || tuyensinh.Hocba != null))
+        {
+            
             await tuyensinhService.CreateTuyensinh(tuyensinh);
         }
     }
@@ -87,7 +100,11 @@
                     content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
                     content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "file", imageFile.Name);
                     ImgUrl = await tuyensinhService.UploadProductImage(content);
-
+                    //var bytes = Convert.FromBase64String(ImgUrl);
+                    //using (var mes = new MemoryStream(bytes))
+                    //{
+                    //    image = Image.FromStream(mes, true);
+                    //}
                     await OnChange.InvokeAsync(ImgUrl);
                     tuyensinh.Hocba = ImgUrl;
                 }
