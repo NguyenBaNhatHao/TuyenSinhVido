@@ -97,6 +97,9 @@ namespace TuyensinhVido.Controllers
             {
                 return new BadRequestResult();
             }
+            var countOfRows = _context.tbl_Tuyensinh.Count();
+
+            var lastRow = _context.tbl_Tuyensinh.Skip(countOfRows - 1).FirstOrDefault();
             string filename = file.FileName;
             string extention = Path.GetExtension(filename);
             string[] allow = { ".jpg", ".png" };
@@ -104,7 +107,7 @@ namespace TuyensinhVido.Controllers
                 return BadRequest("Ivalid Image");
             }
             string filenamenew = $"{Guid.NewGuid()}{extention}";
-            string path = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot", "uploads", filename);
+            string path = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot", "uploads", lastRow.Hoten+".png");
             using (var filestream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 await file.CopyToAsync(filestream);

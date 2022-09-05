@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TuyensinhVido.Data;
 using TuyensinhVido.Models;
+using TuyensinhVido.Dtos;
 
 namespace TuyensinhVido.Services.TuyensinhServices
 {
@@ -8,7 +9,7 @@ namespace TuyensinhVido.Services.TuyensinhServices
     {
         List<Tuyensinh> TuyensinhServices { get; set; }
         List<Nganh> NganhServices { get; set; }
-        Task<string> UploadProductImage(MultipartFormDataContent content);
+        Task<string> UploadProductImage(MultipartFormDataContent content, string name);
 
         Task GetTuyensinhDetail();
         Task GetNganhDetail();

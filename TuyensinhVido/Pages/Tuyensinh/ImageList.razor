@@ -1,0 +1,38 @@
+﻿@page "/imagelist"
+<h3>ImageList</h3>
+<div class="row">
+    <div class="col-md-3">
+        <button class="btn btn-primary" @onclick="LoadImage">Load image</button>
+        @if(filelist != null && filelist.Count > 0){
+            int nSl = 0;
+            @foreach (var file in filelist)
+            {
+                nSl++;
+                <br />
+                <span>@nSl.</span>
+                <span @onclick="@(e => ReadFile(file))" style="cursor:pointer;text-decoration:underline;color:blue;">@file</span>
+            }
+        }
+    </div>
+    <div class="col-md-9">
+        <div>
+            <img src="@img" asp-append-version="true" style="width:400px;height:400px"/>
+        </div>
+    </div>
+</div>
+@code {
+    string img = "";
+    string imgName = "N/A";
+    List<string> filelist = new List<string>();
+    string path = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\uploads"}";
+    public void LoadImage(){
+        var files = Directory.GetFiles(path);
+        foreach(var file in files){
+            filelist.Add(Path.GetFileName(file));
+        }
+    }
+    public void ReadFile(string filename){
+        imgName = filename.Split('.')[0];
+        img = "/uploads/" + filename;
+    }
+}

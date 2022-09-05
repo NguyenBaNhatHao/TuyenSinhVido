@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TuyensinhVido.Models;
 using Tewr.Blazor.FileReader;
+using TuyensinhVido.Dtos;
 
 namespace TuyensinhVido.Services.TuyensinhServices
 {
@@ -45,7 +46,7 @@ namespace TuyensinhVido.Services.TuyensinhServices
             }
         }
 
-        public async Task<string> UploadProductImage(MultipartFormDataContent content)
+        public async Task<string> UploadProductImage(MultipartFormDataContent content, string name)
         {
             var postResult = await _http.PostAsync("https://localhost:7058/api/tuyensinh/upload", content);
             var postContent = await postResult.Content.ReadAsStringAsync();
@@ -55,8 +56,11 @@ namespace TuyensinhVido.Services.TuyensinhServices
             }
             else
             {
-                var imgUrl = Path.Combine("https://localhost:7058/", postContent);
-                return postContent;
+                Console.WriteLine(name+DateTime.Now.ToString());
+                
+                //var imgUrl = Path.Combine("https://localhost:7058/", postContent);
+                var imgUrl = Path.Combine(name+" "+ DateTime.Now.ToString()+postContent);
+                return imgUrl;
             }
         }
     }

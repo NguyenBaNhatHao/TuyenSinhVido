@@ -2,6 +2,7 @@
 @using System.Net.Http.Headers
 @using Tewr.Blazor.FileReader
 @using TuyensinhVido.Models
+@using TuyensinhVido.Dtos
 @using System.IO
 @using System.Drawing
 @inject ILogger<Tuyensinh> Logger
@@ -45,7 +46,7 @@
     </div>
     <div>
         <img src="@image" style="width: 250px; height: 250px;" /><br /><br />
-        <InputFile id="hocba" OnChange="@OnInputFileChanged" class="form-control" />
+        <InputFile id="hocba" OnChange="@OnFileChange" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">@btnText</button>
     <button type="button" class="btn btn-danger" @onclick="Cancel">Cancel</button>
@@ -62,6 +63,7 @@
     [Parameter]
     public EventCallback<string> OnChange { get; set; }
     Image image { get; set; }
+    List<ImageDTO> listAnhUpload = new List<ImageDTO>();
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Save" : "Update";
@@ -75,8 +77,9 @@
         }
         else if (Id == null && (tuyensinh.NganhId != null || tuyensinh.Hoten != null || tuyensinh.Email != null || tuyensinh.SDT != null || tuyensinh.Hocba != null))
         {
-            
+
             await tuyensinhService.CreateTuyensinh(tuyensinh);
+
         }
     }
     async Task Cancel()
@@ -98,17 +101,30 @@
                 {
                     var content = new MultipartFormDataContent();
                     content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+
                     content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "file", imageFile.Name);
-                    ImgUrl = await tuyensinhService.UploadProductImage(content);
-                    //var bytes = Convert.FromBase64String(ImgUrl);
-                    //using (var mes = new MemoryStream(bytes))
-                    //{
-                    //    image = Image.FromStream(mes, true);
-                    //}
+
+                    ImgUrl = await tuyensinhService.UploadProductImage(content, tuyensinh.Hoten);
                     await OnChange.InvokeAsync(ImgUrl);
+
                     tuyensinh.Hocba = ImgUrl;
                 }
             }
         }
+    }
+
+    async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var format = "image/png";
+        var resizedimage = await e.File.RequestImageFileAsync(format, 200, 200);
+        var buffer = new byte[resizedimage.Size];
+        await resizedimage.OpenReadStream().ReadAsync(buffer);
+        var imagedata = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+        ImageDTO imageDTO = new ImageDTO();
+        imageDTO.ImageData = imagedata;
+        imageDTO.Hoten = tuyensinh.Hoten;
+        imageDTO.dateTime = DateTime.Now;
+        listAnhUpload.Add(imageDTO);
+        
     }
 }
