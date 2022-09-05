@@ -12,6 +12,7 @@
         <tr>
             <th>Họ tên</th>
             <th>CMND</th>
+            <th>Số điện thoại</th>
             <th>Ngày sinh</th>
             <th>Học bạ</th>
             <th>Email</th>
@@ -24,6 +25,7 @@
             <tr>
                 <td>@sinhvien.Hoten</td>
                 <td>@sinhvien.CMND</td>
+                <td>@sinhvien.SDT</td>
                 <td>@sinhvien.Ngaysinh</td>
                 <td>@sinhvien.Hocba</td>
                 <td>@sinhvien.Email</td>
@@ -51,7 +53,7 @@
 @code {
     private IEnumerable<Tuyensinh> sinhviens = Enumerable.Empty<Tuyensinh>();
     private int pageIndex = 1;
-    private int itemsPerPage = 4;
+    private int itemsPerPage = 10;
     private int totalPages = 1;
     protected override async Task OnInitializedAsync()
     {
