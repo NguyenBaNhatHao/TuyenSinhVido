@@ -10,5 +10,6 @@ namespace TuyensinhVido.Data
         }
         public DbSet<Tuyensinh> tbl_Tuyensinh { get; set; }
         public DbSet<Nganh> tbl_Nganh { get; set; }
+        public DbSet<Hinhanh> tbl_Hinhanh { get; set; }
     }
 }

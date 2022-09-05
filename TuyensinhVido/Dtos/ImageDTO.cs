@@ -2,9 +2,7 @@
 {
     public class ImageDTO
     {
-        public string Id { get; set; }
-        public string ImageData { get; set; }
-        public string Hoten { get; set; }
-        public DateTime dateTime { get; set; } 
+        public List<string> ImageData { get; set; }
+        public DateTime dateTime { get; set; } = DateTime.Now;
     }
 }

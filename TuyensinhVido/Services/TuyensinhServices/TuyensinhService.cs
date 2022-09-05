@@ -18,8 +18,9 @@ namespace TuyensinhVido.Services.TuyensinhServices
             _navigationManager = navigationManager;
             _http.BaseAddress = new Uri(_navigationManager.BaseUri);
         }
-        public async Task CreateTuyensinh(Tuyensinh tuyensinh)
+        public async Task CreateTuyensinh(TuyenhsinhDTO tuyensinh)
         {
+
             var result = await _http.PostAsJsonAsync("api/tuyensinh", tuyensinh);
             await SetSinhvien(result);
         }
@@ -46,22 +47,23 @@ namespace TuyensinhVido.Services.TuyensinhServices
             }
         }
 
-        public async Task<string> UploadProductImage(MultipartFormDataContent content, string name)
+        public async Task UploadProductImage(List<ImageDTO> imageDTO)
         {
-            var postResult = await _http.PostAsync("https://localhost:7058/api/tuyensinh/upload", content);
-            var postContent = await postResult.Content.ReadAsStringAsync();
-            if (!postResult.IsSuccessStatusCode)
-            {
-                throw new ApplicationException(postContent);
-            }
-            else
-            {
-                Console.WriteLine(name+DateTime.Now.ToString());
-                
-                //var imgUrl = Path.Combine("https://localhost:7058/", postContent);
-                var imgUrl = Path.Combine(name+" "+ DateTime.Now.ToString()+postContent);
-                return imgUrl;
-            }
+            var postResult = await _http.PostAsJsonAsync("https://localhost:7058/api/tuyensinh/upload", imageDTO);
+            //var postContent = await postResult.Content.ReadAsStringAsync();
+            //if (!postResult.IsSuccessStatusCode)
+            //{
+            //    throw new ApplicationException(postContent);
+            //}
+            //else
+            //{
+            //    Console.WriteLine(name+DateTime.Now.ToString());
+
+            //    //var imgUrl = Path.Combine("https://localhost:7058/", postContent);
+            //    var imgUrl = Path.Combine(name+" "+ DateTime.Now.ToString()+postContent);
+            //    return imgUrl;
+            //}
+            await SetSinhvien(postResult);
         }
     }
 }

@@ -46,7 +46,6 @@ namespace TuyensinhVido.Controllers
                 bvdto.CMND = item.CMND;
                 bvdto.SDT = item.SDT;
                 bvdto.Ngaysinh = item.Ngaysinh;
-                bvdto.Hocba = item.Hocba;
                 bvdto.Email = item.Email;
                 bvdto.NganhId = item.NganhId;
                 bvdto.Nganh = item.Nganh;
@@ -65,7 +64,7 @@ namespace TuyensinhVido.Controllers
             List<NganhDTO> nganhDTOs = new List<NganhDTO>();
             var groupByLastNamesQuery = from nganh in _context.tbl_Nganh
                                         group nganh by new { nganh.ten, nganh.id } into nganhs
-                                        select new NganhDTO(){ id = nganhs.Key.id, ten = nganhs.Key.ten };
+                                        select new NganhDTO() { id = nganhs.Key.id, ten = nganhs.Key.ten };
 
             foreach (var nameGroup in groupByLastNamesQuery)
             {
@@ -73,46 +72,60 @@ namespace TuyensinhVido.Controllers
                 nganhDTO.id = nameGroup.id;
                 nganhDTO.ten = nameGroup.ten;
                 nganhDTOs.Add((nganhDTO));
-                
+
             }
             return Ok(nganhDTOs);
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<TuyenhsinhDTO>>> CreateSinhVien(Tuyensinh tuyensinh)
+        public async Task<ActionResult<List<TuyenhsinhDTO>>> CreateSinhVien(TuyenhsinhDTO tuyensinh)
         {
-            
-            _context.tbl_Tuyensinh.Add(tuyensinh);
+            List<Hinhanh> listhinhanhs = new List<Hinhanh>();
+            tuyensinh.Hinhanh.ImageData.ForEach(item =>
+            {
+                Hinhanh hinhanh = new Hinhanh();
+                hinhanh.Image = item;
+                hinhanh.ImageName = "ten cc gi do";
+                listhinhanhs.Add(hinhanh);
+            });
+
+            Tuyensinh content = new Tuyensinh();
+            content.Hinhanh = listhinhanhs;
+            content.Hoten = tuyensinh.Hoten;
+            content.CMND = tuyensinh.CMND;
+            content.SDT = tuyensinh.SDT;
+            content.Ngaysinh = tuyensinh.Ngaysinh;
+            content.Email = tuyensinh.Email;
+            content.NganhId = tuyensinh.NganhId;
+            content.Nganh = tuyensinh.Nganh;
+            content.SDT = tuyensinh.SDT;
+
+            _context.tbl_Tuyensinh.Add(content);
             await _context.SaveChangesAsync();
             return Ok(tuyensinh);
         }
         [HttpPost("upload")]
-        public async Task<ActionResult> UploadHocba([FromForm] IFormFile file)
+        public async Task<ActionResult> UploadHocba( ImageDTO ImageDto)
         {
-            if (file == null)
+            Hinhanh hinhanh = new Hinhanh();
+            ImageDto.ImageData.ForEach(item =>
             {
-                return new BadRequestResult();
-            }
-            else if (file.Length == 0)
-            {
-                return new BadRequestResult();
-            }
-            var countOfRows = _context.tbl_Tuyensinh.Count();
-
-            var lastRow = _context.tbl_Tuyensinh.Skip(countOfRows - 1).FirstOrDefault();
-            string filename = file.FileName;
-            string extention = Path.GetExtension(filename);
-            string[] allow = { ".jpg", ".png" };
-            if (!allow.Contains(extention.ToLower())){
-                return BadRequest("Ivalid Image");
-            }
-            string filenamenew = $"{Guid.NewGuid()}{extention}";
-            string path = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot", "uploads", lastRow.Hoten+".png");
-            using (var filestream = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                await file.CopyToAsync(filestream);
-            }
-            return Ok(filenamenew);
+                
+            });
+            
+            //string filename = file.FileName;
+            //string extention = Path.GetExtension(filename);
+            //string[] allow = { ".jpg", ".png" };
+            //if (!allow.Contains(extention.ToLower())){
+            //    return BadRequest("Ivalid Image");
+            //}
+            //string filenamenew = $"{Guid.NewGuid()}{extention}";
+            //string path = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot", "uploads", lastRow.Hoten+".png");
+            //using (var filestream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            //{
+            //    await file.CopyToAsync(filestream);
+            //}
+            return Ok(hinhanh);
         }
 
     }

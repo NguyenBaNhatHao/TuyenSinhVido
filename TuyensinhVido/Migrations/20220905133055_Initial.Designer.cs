@@ -12,7 +12,7 @@ using TuyensinhVido.Data;
 namespace TuyensinhVido.Migrations
 {
     [DbContext(typeof(TuyensinhDbContext))]
-    [Migration("20220904085622_Initial")]
+    [Migration("20220905133055_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,30 @@ namespace TuyensinhVido.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("TuyensinhVido.Models.Hinhanh", b =>
+                {
+                    b.Property<int?>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ImageTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ThiSinhId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ThiSinhId");
+
+                    b.ToTable("tbl_Hinhanh");
+                });
 
             modelBuilder.Entity("TuyensinhVido.Models.Nganh", b =>
                 {
@@ -57,11 +81,11 @@ namespace TuyensinhVido.Migrations
 
             modelBuilder.Entity("TuyensinhVido.Models.Tuyensinh", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
 
                     b.Property<string>("CMND")
                         .HasColumnType("nvarchar(max)");
@@ -92,6 +116,17 @@ namespace TuyensinhVido.Migrations
                     b.ToTable("tbl_Tuyensinh");
                 });
 
+            modelBuilder.Entity("TuyensinhVido.Models.Hinhanh", b =>
+                {
+                    b.HasOne("TuyensinhVido.Models.Tuyensinh", "ThiSinh")
+                        .WithMany("Hinhanh")
+                        .HasForeignKey("ThiSinhId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ThiSinh");
+                });
+
             modelBuilder.Entity("TuyensinhVido.Models.Tuyensinh", b =>
                 {
                     b.HasOne("TuyensinhVido.Models.Nganh", "Nganh")
@@ -99,6 +134,11 @@ namespace TuyensinhVido.Migrations
                         .HasForeignKey("NganhId");
 
                     b.Navigation("Nganh");
+                });
+
+            modelBuilder.Entity("TuyensinhVido.Models.Tuyensinh", b =>
+                {
+                    b.Navigation("Hinhanh");
                 });
 #pragma warning restore 612, 618
         }

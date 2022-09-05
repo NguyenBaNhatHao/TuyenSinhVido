@@ -34,6 +34,32 @@ namespace TuyensinhVido.Migrations
                         principalColumn: "id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "tbl_Hinhanh",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ThiSinhId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tbl_Hinhanh", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tbl_Hinhanh_tbl_Tuyensinh_ThiSinhId",
+                        column: x => x.ThiSinhId,
+                        principalTable: "tbl_Tuyensinh",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tbl_Hinhanh_ThiSinhId",
+                table: "tbl_Hinhanh",
+                column: "ThiSinhId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_tbl_Tuyensinh_NganhId",
                 table: "tbl_Tuyensinh",
@@ -42,6 +68,9 @@ namespace TuyensinhVido.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "tbl_Hinhanh");
+
             migrationBuilder.DropTable(
                 name: "tbl_Tuyensinh");
 

@@ -56,30 +56,31 @@
 @code {
     [Parameter]
     public int? Id { get; set; }
-    Tuyensinh tuyensinh = new Tuyensinh();
+    TuyenhsinhDTO tuyensinh = new TuyenhsinhDTO();
+    Hinhanh hinhanhs = new Hinhanh();
     string btnText = string.Empty;
     [Parameter]
     public string ImgUrl { get; set; }
     [Parameter]
     public EventCallback<string> OnChange { get; set; }
     Image image { get; set; }
-    List<ImageDTO> listAnhUpload = new List<ImageDTO>();
+    List<string> listAnhUpload = new List<string>();
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Save" : "Update";
     }
     async Task HandleSubmit()
     {
-        if (tuyensinh.NganhId == null || tuyensinh.Hoten == null || tuyensinh.Email == null || tuyensinh.SDT == null || tuyensinh.Hocba == null)
+        if (tuyensinh.NganhId == null || tuyensinh.Hoten == null || tuyensinh.Email == null || tuyensinh.SDT == null)
         {
             await JsRuntime.InvokeVoidAsync("alert", "Warning!");
             bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Xin hãy nhập đủ dữ liệu");
         }
-        else if (Id == null && (tuyensinh.NganhId != null || tuyensinh.Hoten != null || tuyensinh.Email != null || tuyensinh.SDT != null || tuyensinh.Hocba != null))
+        else if (Id == null && (tuyensinh.NganhId != null || tuyensinh.Hoten != null || tuyensinh.Email != null || tuyensinh.SDT != null))
         {
-
+            tuyensinh.Hinhanh = new ImageDTO();
+            tuyensinh.Hinhanh.ImageData = listAnhUpload;
             await tuyensinhService.CreateTuyensinh(tuyensinh);
-
         }
     }
     async Task Cancel()
@@ -89,29 +90,29 @@
     async Task SelectValues(){
         await tuyensinhService.GetNganhDetail();
     }
-    async Task OnInputFileChanged (InputFileChangeEventArgs e){
-        var imageFiles = e.GetMultipleFiles();
-        foreach (var imageFile in imageFiles)
-        {
-            if (imageFile != null)
-            {
-                var resizedFile = await imageFile.RequestImageFileAsync("image/png", 300, 500);
+    //async Task OnInputFileChanged (InputFileChangeEventArgs e){
+    //    var imageFiles = e.GetMultipleFiles();
+    //    foreach (var imageFile in imageFiles)
+    //    {
+    //        if (imageFile != null)
+    //        {
+    //            var resizedFile = await imageFile.RequestImageFileAsync("image/png", 300, 500);
 
-                using (var ms = resizedFile.OpenReadStream(resizedFile.Size))
-                {
-                    var content = new MultipartFormDataContent();
-                    content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+    //            using (var ms = resizedFile.OpenReadStream(resizedFile.Size))
+    //            {
+    //                var content = new MultipartFormDataContent();
+    //                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
 
-                    content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "file", imageFile.Name);
+    //                content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "file", imageFile.Name);
 
-                    ImgUrl = await tuyensinhService.UploadProductImage(content, tuyensinh.Hoten);
-                    await OnChange.InvokeAsync(ImgUrl);
+    //                ImgUrl = await tuyensinhService.UploadProductImage(content, tuyensinh.Hoten);
+    //                await OnChange.InvokeAsync(ImgUrl);
 
-                    tuyensinh.Hocba = ImgUrl;
-                }
-            }
-        }
-    }
+    //                tuyensinh.Hocba = ImgUrl;
+    //            }
+    //        }
+    //    }
+    //}
 
     async Task OnFileChange(InputFileChangeEventArgs e)
     {
@@ -120,11 +121,6 @@
         var buffer = new byte[resizedimage.Size];
         await resizedimage.OpenReadStream().ReadAsync(buffer);
         var imagedata = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
-        ImageDTO imageDTO = new ImageDTO();
-        imageDTO.ImageData = imagedata;
-        imageDTO.Hoten = tuyensinh.Hoten;
-        imageDTO.dateTime = DateTime.Now;
-        listAnhUpload.Add(imageDTO);
-        
+        listAnhUpload.Add(imagedata);
     }
 }

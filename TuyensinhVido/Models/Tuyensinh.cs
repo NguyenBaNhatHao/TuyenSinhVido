@@ -6,7 +6,7 @@ namespace TuyensinhVido.Models
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? Hoten { get; set; }
         public string? CMND { get; set; }
         public string SDT { get; set; }
@@ -15,5 +15,6 @@ namespace TuyensinhVido.Models
         public int? NganhId { get; set; }
         public string? Email { get; set; }
         public virtual Nganh? Nganh { get; set; }
+        public List<Hinhanh>? Hinhanh { get; set; }
     }
 }

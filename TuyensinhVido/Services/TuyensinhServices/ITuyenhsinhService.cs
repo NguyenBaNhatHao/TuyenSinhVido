@@ -9,10 +9,10 @@ namespace TuyensinhVido.Services.TuyensinhServices
     {
         List<Tuyensinh> TuyensinhServices { get; set; }
         List<Nganh> NganhServices { get; set; }
-        Task<string> UploadProductImage(MultipartFormDataContent content, string name);
+        Task UploadProductImage(List<ImageDTO> imageDTO);
 
         Task GetTuyensinhDetail();
         Task GetNganhDetail();
-        Task CreateTuyensinh(Tuyensinh tuyensinh);
+        Task CreateTuyensinh(TuyenhsinhDTO tuyensinh);
     }
 }
