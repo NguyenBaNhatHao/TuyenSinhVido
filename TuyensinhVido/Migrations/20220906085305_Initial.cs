@@ -38,7 +38,8 @@ namespace TuyensinhVido.Migrations
                 name: "tbl_Hinhanh",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -74,6 +75,7 @@ namespace TuyensinhVido.Migrations
             migrationBuilder.DropTable(
                 name: "tbl_Tuyensinh");
 
+         
         }
     }
 }

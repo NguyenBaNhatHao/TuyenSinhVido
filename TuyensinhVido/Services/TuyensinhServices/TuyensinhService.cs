@@ -11,7 +11,8 @@ namespace TuyensinhVido.Services.TuyensinhServices
         private readonly NavigationManager _navigationManager;
         public List<Tuyensinh> TuyensinhServices { get; set; } = new List<Tuyensinh>();
         public List<Nganh> NganhServices { get; set; } = new List<Nganh>();
-        
+        public List<TuyensinhReadDTO> TuyensinhReadDTOs { get ; set; } = new List<TuyensinhReadDTO>();
+
         public TuyensinhService(HttpClient http, NavigationManager navigationManager)
         {
             _http = http;
@@ -31,10 +32,10 @@ namespace TuyensinhVido.Services.TuyensinhServices
         }
         public async Task GetTuyensinhDetail()
         {
-            var result = await _http.GetFromJsonAsync<List<Tuyensinh>>("api/tuyensinh");
+            var result = await _http.GetFromJsonAsync<List<TuyensinhReadDTO>>("api/tuyensinh");
             if (result != null)
             {
-                TuyensinhServices = result;
+                TuyensinhReadDTOs = result;
             }
         }
 

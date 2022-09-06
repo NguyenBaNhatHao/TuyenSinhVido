@@ -12,7 +12,7 @@ using TuyensinhVido.Data;
 namespace TuyensinhVido.Migrations
 {
     [DbContext(typeof(TuyensinhDbContext))]
-    [Migration("20220905133055_Initial")]
+    [Migration("20220906085305_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,8 +26,11 @@ namespace TuyensinhVido.Migrations
 
             modelBuilder.Entity("TuyensinhVido.Models.Hinhanh", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");

@@ -8,6 +8,7 @@ namespace TuyensinhVido.Services.TuyensinhServices
     public interface ITuyenhsinhService
     {
         List<Tuyensinh> TuyensinhServices { get; set; }
+        List<TuyensinhReadDTO> TuyensinhReadDTOs { get; set; }
         List<Nganh> NganhServices { get; set; }
         Task UploadProductImage(List<ImageDTO> imageDTO);
 

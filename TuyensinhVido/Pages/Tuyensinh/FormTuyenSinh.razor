@@ -1,5 +1,6 @@
 ﻿@page "/tuyensinh"
 @using TuyensinhVido.Models
+@using TuyensinhVido.Dtos
 @using Newtonsoft.Json
 @inject ITuyenhsinhService tuyensinhService
 @inject NavigationManager NavigationManager
@@ -14,9 +15,9 @@
             <th>CMND</th>
             <th>Số điện thoại</th>
             <th>Ngày sinh</th>
-            <th>Học bạ</th>
             <th>Email</th>
             <th>Ngành đăng kí</th>
+            <th>Image</th>
         </tr>
     </thead>
     <tbody>
@@ -27,9 +28,9 @@
                 <td>@sinhvien.CMND</td>
                 <td>@sinhvien.SDT</td>
                 <td>@sinhvien.Ngaysinh</td>
-                <td>@sinhvien.Hocba</td>
                 <td>@sinhvien.Email</td>
-                <td>@sinhvien.Nganh.ten</td>
+                <td>@sinhvien.Tennganh</td>
+                <td><img src="@sinhvien.Image"/></td>
             </tr>
         }
         @*@foreach(DataRow row in dataTable.Rows)
@@ -51,17 +52,17 @@
     </Pagination>
 </tfoot>
 @code {
-    private IEnumerable<Tuyensinh> sinhviens = Enumerable.Empty<Tuyensinh>();
+    private IEnumerable<TuyensinhReadDTO> sinhviens = Enumerable.Empty<TuyensinhReadDTO>();
     private int pageIndex = 1;
     private int itemsPerPage = 10;
     private int totalPages = 1;
     protected override async Task OnInitializedAsync()
     {
         await tuyensinhService.GetTuyensinhDetail();
-        if (tuyensinhService.TuyensinhServices != null)
+        if (tuyensinhService.TuyensinhReadDTOs != null)
         {
-            totalPages = (int)(tuyensinhService.TuyensinhServices.Count() / itemsPerPage);
-            sinhviens = tuyensinhService.TuyensinhServices.Skip(0).Take(itemsPerPage);
+            totalPages = (int)(tuyensinhService.TuyensinhReadDTOs.Count() / itemsPerPage);
+            sinhviens = tuyensinhService.TuyensinhReadDTOs.Skip(0).Take(itemsPerPage);
         }
     }
     void CreateAndEditSinhvien()
@@ -70,11 +71,11 @@
     }
     private void SelectedPage(int selectedPageIndex)
     {
-        if (tuyensinhService.TuyensinhServices != null)
+        if (tuyensinhService.TuyensinhReadDTOs != null)
         {
             pageIndex = selectedPageIndex;
             var skipCount = itemsPerPage * (pageIndex - 1);
-            sinhviens = tuyensinhService.TuyensinhServices.Skip(skipCount).Take(itemsPerPage);
+            sinhviens = tuyensinhService.TuyensinhReadDTOs.Skip(skipCount).Take(itemsPerPage);
         }
     }
 }

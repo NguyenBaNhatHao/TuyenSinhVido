@@ -5,6 +5,7 @@ using TuyensinhVido.Data;
 using TuyensinhVido.Dtos;
 using TuyensinhVido.Models;
 using System.IO;
+using System.Text;
 
 namespace TuyensinhVido.Controllers
 {
@@ -22,40 +23,36 @@ namespace TuyensinhVido.Controllers
         [HttpGet]
         public async Task<ActionResult<List<TuyenhsinhDTO>>> GetTuyensinh()
         {
-            List<TuyenhsinhDTO> BvDTOs = new List<TuyenhsinhDTO>();
-            var result = await (from tuyensinh in _context.tbl_Tuyensinh
-                                join nganh in _context.tbl_Nganh on tuyensinh.NganhId equals nganh.id
-                                select new
-                                {
-                                    Id = tuyensinh.Id,
-                                    Hoten = tuyensinh.Hoten,
-                                    CMND = tuyensinh.CMND,
-                                    SDT = tuyensinh.SDT,
-                                    Ngaysinh = tuyensinh.Ngaysinh,
-                                    Hocba = tuyensinh.Hocba,
-                                    NganhId = tuyensinh.NganhId,
-                                    Email = tuyensinh.Email,
-                                    Nganh = tuyensinh.Nganh
-                                }
-                          ).ToListAsync();
-            foreach (var item in result)
+            try
             {
-                TuyenhsinhDTO bvdto = new TuyenhsinhDTO();
-                bvdto.Id = item.Id;
-                bvdto.Hoten = item.Hoten;
-                bvdto.CMND = item.CMND;
-                bvdto.SDT = item.SDT;
-                bvdto.Ngaysinh = item.Ngaysinh;
-                bvdto.Email = item.Email;
-                bvdto.NganhId = item.NganhId;
-                bvdto.Nganh = item.Nganh;
+                var jsonResult = new StringBuilder();
+                var data = new StringBuilder();
+                using (var cmd = _context.Database.GetDbConnection().CreateCommand())
+                {
+                    cmd.CommandText = "GetSinhvien";
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (cmd.Connection.State != System.Data.ConnectionState.Open) cmd.Connection.Open();
+                    var reader = cmd.ExecuteReader();
+                    if (!reader.HasRows)
+                    {
+                        jsonResult.Append("[]");
+                    }
+                    else
+                    {
+                        while (reader.Read())
+                        {
+                            data = jsonResult.Append(reader.GetValue(0).ToString());
+                        }
+                    }
 
-                BvDTOs.Add(bvdto);
+                    return Ok(data.ToString().Replace("\\", ""));
+                }
             }
-            if (BvDTOs != null)
-                return Ok(BvDTOs);
-            else
-                return NotFound();
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("nganh")]

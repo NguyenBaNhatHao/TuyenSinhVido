@@ -25,7 +25,10 @@ namespace TuyensinhVido.Migrations
             modelBuilder.Entity("TuyensinhVido.Models.Hinhanh", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
@@ -46,37 +49,7 @@ namespace TuyensinhVido.Migrations
                     b.ToTable("tbl_Hinhanh");
                 });
 
-            modelBuilder.Entity("TuyensinhVido.Models.Nganh", b =>
-                {
-                    b.Property<int?>("id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("KhoiThi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KyHieu")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("heDaoTaoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("khoaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ma")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ten")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("tenTA")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("tbl_Nganh");
-                });
-
+            
             modelBuilder.Entity("TuyensinhVido.Models.Tuyensinh", b =>
                 {
                     b.Property<int?>("Id")
